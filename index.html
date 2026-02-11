@@ -1,111 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego de Adivinar el Número</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 50px;
-        }
-        #feedback {
-            margin-top: 20px;
-            font-weight: bold;
-            min-height: 20px; /* Asegura espacio para el mensaje */
-        }
-        input[type="number"] {
-            padding: 10px;
-            margin-right: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>Adivina el Número Secreto (1-100) 🔢</h1>
-
-    <p>Introduce tu adivinanza:</p>
-    
-    <input type="number" id="guessInput" min="1" max="100" placeholder="Escribe un número">
-    <button onclick="checkGuess()">Adivinar</button>
-
-    <div id="feedback"></div>
+<body style="font-family:sans-serif;text-align:center;padding:50px">
+    <h2>Adivina el Número (1-100) 🔢</h2>
+    <input type="number" id="i" placeholder="?">
+    <button id="b" onclick="c()">Adivinar</button>
+    <p id="m"></p>
 
     <script>
-        // Variables globales
-        let secretNumber;
-        let attempts = 0;
+        let s, a, ok;
+        const $ = id => document.getElementById(id), 
+              msg = $("m"), input = $("i"), btn = $("b");
 
-        /**
-         * Inicializa el juego generando un número aleatorio y reseteando los intentos.
-         */
-        function initializeGame() {
-            // Genera un número entero aleatorio entre 1 y 100 (inclusive)
-            secretNumber = Math.floor(Math.random() * 100) + 1;
-            attempts = 0;
-            document.getElementById('feedback').textContent = '¡Juego iniciado! Adivina el número entre 1 y 100.';
-            document.getElementById('guessInput').value = ''; // Limpia el input
-            document.getElementById('guessInput').disabled = false;
-            document.querySelector('button').disabled = false;
-            console.log("Número Secreto (solo para debug): " + secretNumber); // Opcional: mostrarlo en consola para pruebas
-        }
+        const reset = () => {
+            s = Math.floor(Math.random() * 100) + 1;
+            a = 0; ok = 1;
+            msg.innerText = "¡Suerte!"; input.disabled = 0; btn.innerText = "Adivinar";
+        };
 
-        /**
-         * Comprueba la adivinanza del usuario y proporciona retroalimentación.
-         */
-        function checkGuess() {
-            const guessInput = document.getElementById('guessInput');
-            const feedback = document.getElementById('feedback');
-            const userGuess = parseInt(guessInput.value);
-
-            // Validación básica del input
-            if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
-                feedback.textContent = '❌ Por favor, ingresa un número válido entre 1 y 100.';
-                return; // Detiene la función
-            }
-
-            // Incrementa el contador de intentos
-            attempts++;
-
-            // Lógica del juego
-            if (userGuess === secretNumber) {
-                // ¡Adivinanza correcta!
-                feedback.textContent = `🎉 ¡Correcto! Lo adivinaste en ${attempts} intento(s). ¡Felicidades!`;
-                // Deshabilita el input y el botón
-                guessInput.disabled = true;
-                document.querySelector('button').textContent = 'Jugar de Nuevo';
-                document.querySelector('button').onclick = initializeGame; // Cambia la función del botón
-            } else if (userGuess < secretNumber) {
-                // Demasiado bajo
-                feedback.textContent = `⬇️ Demasiado bajo. Intenta de nuevo. (Intento #${attempts})`;
-            } else {
-                // Demasiado alto
-                feedback.textContent = `⬆️ Demasiado alto. Intenta de nuevo. (Intento #${attempts})`;
-            }
+        const c = () => {
+            if (!ok) return reset();
+            let v = +input.value;
+            if (!v || v < 1 || v > 100) return msg.innerText = "❌ Error";
             
-            // Limpia el input para la siguiente adivinanza
-            guessInput.value = '';
-            guessInput.focus(); // Coloca el foco de nuevo en el input
-        }
-
-        // 1. La página, al cargarse, debe generar un número entero aleatorio.
-        // Llama a la función de inicialización cuando el script se carga.
-        initializeGame();
+            a++;
+            if (v === s) {
+                msg.innerText = `🎉 ¡Ganaste en ${a} vez/veces!`;
+                btn.innerText = "Reiniciar";
+                ok = 0; input.disabled = 1;
+            } else {
+                msg.innerText = v < s ? "⬆️ Más alto" : "⬇️ Más bajo";
+                input.value = ""; input.focus();
+            }
+        };
+        reset();
     </script>
-
 </body>
 </html>
